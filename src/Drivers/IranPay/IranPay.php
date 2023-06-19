@@ -36,7 +36,7 @@ class IranPay extends Driver
 
         if (isset($response['status']) && $response['status'] !== $this->getSuccessResponseStatusCode()) {
             $message = $response['message'] ?? $this->getStatusMessage($response['status']);
-            throw new PurchaseFailedException($message, $response['status']);
+            throw new PurchaseFailedException($message, (int)$response['status']);
         }
 
 
