@@ -54,7 +54,8 @@ class IranPay extends Driver
         }
 
         return [
-            'amount' => 10,
+            'order_id' => $this->getInvoice()->getInvoiceId(),
+            'amount' => $this->getInvoice()->getAmount(),
             'merchant_id' => $this->settings['merchant_id'],
             'gateway_name'=>$this->settings['gateway_name']
         ];

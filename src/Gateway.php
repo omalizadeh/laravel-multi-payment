@@ -58,6 +58,10 @@ class Gateway
     }
 
 
+    public function getPurchaseData($invoice) {
+        return $this->getDriver()->setInvoice($invoice)->getPurchaseData();
+    }
+
     /**
      * verify payment was successful
      *
