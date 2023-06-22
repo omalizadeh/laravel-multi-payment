@@ -47,7 +47,7 @@ class IranPay extends Driver
      * @throws InvalidConfigurationException
      * @throws \Exception
      */
-    protected function getPurchaseData(): array
+    public function getPurchaseData(): array
     {
         if (empty($this->settings['merchant_id'])) {
             throw new InvalidConfigurationException('merchant_id has not been set.');
