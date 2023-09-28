@@ -3,18 +3,18 @@
 return [
 
     /**
-     *  driver class namespace
+     *  driver class namespace.
      */
     'driver' => Omalizadeh\MultiPayment\Drivers\Novin\Novin::class,
 
     /**
      *  gateway payment page language
-     *  supported values: fa, en
+     *  supported values: fa, en.
      */
     'language' => 'fa',
 
     /**
-     *  gateway configurations
+     *  gateway configurations.
      */
     'main' => [
         'username' => '',
@@ -33,5 +33,5 @@ return [
         'temp_files_dir' => '',
         'callback_url' => 'https://yoursite.com/path/to',
         'description' => 'payment using eghtesade novin',
-    ]
+    ],
 ];

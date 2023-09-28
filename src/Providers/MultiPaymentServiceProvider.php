@@ -3,7 +3,7 @@
 namespace Omalizadeh\MultiPayment\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Omalizadeh\MultiPayment\Gateway;
+use Omalizadeh\MultiPayment\PaymentGateway;
 
 class MultiPaymentServiceProvider extends ServiceProvider
 {
@@ -12,12 +12,12 @@ class MultiPaymentServiceProvider extends ServiceProvider
         parent::register();
 
         $this->app->bind('PaymentGateway', function () {
-            return new Gateway();
+            return new PaymentGateway();
         });
 
         $this->mergeConfigFrom(
             __DIR__.'/../../config/multipayment.php',
-            'multipayment.php'
+            'multipayment.php',
         );
     }
 
@@ -32,11 +32,11 @@ class MultiPaymentServiceProvider extends ServiceProvider
             ]);
 
             $this->publishes([
-                __DIR__.'/../../resources/views' => resource_path('views/vendor/multipayment')
+                __DIR__.'/../../resources/views' => resource_path('views/vendor/multipayment'),
             ], 'multipayment-view');
 
             $this->publishes([
-                __DIR__.'/../../config/multipayment.php' => config_path('multipayment.php')
+                __DIR__.'/../../config/multipayment.php' => config_path('multipayment.php'),
             ], 'multipayment-config');
 
             $this->publishes([
@@ -48,31 +48,31 @@ class MultiPaymentServiceProvider extends ServiceProvider
             ], 'zibal-config');
 
             $this->publishes([
-                __DIR__.'/../../config/gateway_mellat.php' => config_path('gateway_mellat.php')
+                __DIR__.'/../../config/gateway_mellat.php' => config_path('gateway_mellat.php'),
             ], 'mellat-config');
 
             $this->publishes([
-                __DIR__.'/../../config/gateway_saman.php' => config_path('gateway_saman.php')
+                __DIR__.'/../../config/gateway_saman.php' => config_path('gateway_saman.php'),
             ], 'saman-config');
 
             $this->publishes([
-                __DIR__.'/../../config/gateway_novin.php' => config_path('gateway_novin.php')
+                __DIR__.'/../../config/gateway_novin.php' => config_path('gateway_novin.php'),
             ], 'novin-config');
 
             $this->publishes([
-                __DIR__.'/../../config/gateway_pasargad.php' => config_path('gateway_pasargad.php')
+                __DIR__.'/../../config/gateway_pasargad.php' => config_path('gateway_pasargad.php'),
             ], 'pasargad-config');
 
             $this->publishes([
-                __DIR__.'/../../config/gateway_parsian.php' => config_path('gateway_parsian.php')
+                __DIR__.'/../../config/gateway_parsian.php' => config_path('gateway_parsian.php'),
             ], 'parsian-config');
 
             $this->publishes([
-                __DIR__.'/../../config/gateway_idpay.php' => config_path('gateway_idpay.php')
+                __DIR__.'/../../config/gateway_idpay.php' => config_path('gateway_idpay.php'),
             ], 'idpay-config');
 
             $this->publishes([
-                __DIR__.'/../../config/gateway_payir.php' => config_path('gateway_payir.php')
+                __DIR__.'/../../config/gateway_payir.php' => config_path('gateway_payir.php'),
             ], 'payir-config');
         }
     }

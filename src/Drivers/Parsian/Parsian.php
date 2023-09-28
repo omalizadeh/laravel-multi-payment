@@ -15,7 +15,8 @@ class Parsian extends Driver
     public function purchase(): string
     {
         $soap = new SoapClient($this->getPurchaseUrl(), $this->getSoapOptions());
-        $response = $soap->SalePaymentRequest($this->getPurchaseData());
+        $purchaseData = $this->getPurchaseData();
+        $response = $soap->SalePaymentRequest($purchaseData);
 
         if ($response->SalePaymentRequestResult && $response->SalePaymentRequestResult->Status === $this->getSuccessResponseStatusCode()) {
             $this->getInvoice()->setTransactionId($response->SalePaymentRequestResult->Token);
@@ -25,7 +26,8 @@ class Parsian extends Driver
 
         throw new PurchaseFailedException(
             $this->getStatusMessage($response->SalePaymentRequestResult->Status),
-            $response->SalePaymentRequestResult->Status
+            $response->SalePaymentRequestResult->Status,
+            $purchaseData,
         );
     }
 
@@ -38,7 +40,7 @@ class Parsian extends Driver
 
     public function verify(): Receipt
     {
-        if (!empty(request('status')) && request('status') !== $this->getSuccessResponseStatusCode()) {
+        if (! empty(request('status')) && request('status') !== $this->getSuccessResponseStatusCode()) {
             throw new PaymentFailedException($this->getStatusMessage(request('status')), request('status'));
         }
 
@@ -54,19 +56,19 @@ class Parsian extends Driver
 
         throw new PaymentFailedException(
             $this->getStatusMessage($verificationResponse->ConfirmPaymentResult->Status),
-            $verificationResponse->ConfirmPaymentResult->Status
+            $verificationResponse->ConfirmPaymentResult->Status,
         );
     }
 
     protected function getPurchaseData(): array
     {
-        if (empty($this->settings['pin_code'])) {
-            throw new InvalidConfigurationException('pin_code has not been set.');
+        if (empty($this->settings['pin'])) {
+            throw new InvalidConfigurationException('pin has not been set.');
         }
 
         return [
             'requestData' => [
-                'LoginAccount' => $this->settings['pin_code'],
+                'LoginAccount' => $this->settings['pin'],
                 'OrderId' => $this->getInvoice()->getInvoiceId(),
                 'Amount' => $this->getInvoice()->getAmount(),
                 'CallBackUrl' => $this->getInvoice()->getCallbackUrl() ?: $this->settings['callback_url'],
@@ -80,13 +82,13 @@ class Parsian extends Driver
     {
         return [
             'requestData' => [
-                'LoginAccount' => $this->settings['pin_code'],
+                'LoginAccount' => $this->settings['pin'],
                 'Token' => $this->getInvoice()->getTransactionId(),
             ],
         ];
     }
 
-    protected function getStatusMessage($statusCode): string
+    protected function getStatusMessage(int|string $statusCode): string
     {
         $messages = [
             '-32768' => 'ﺧﻄﺎﻱ ﻧﺎﺷﻨﺎﺧﺘﻪ ﺭﺥ ﺩﺍﺩﻩ ﺍﺳﺖ',
@@ -382,10 +384,10 @@ class Parsian extends Driver
             '96' => 'ﺍﺷﻜﺎﻝ ﺩﺭ ﻋﻤﻠﻜﺮﺩ ﺳﻴﺴﺘﻢ ',
             '97' => 'ﺗﺮﺍﻛﻨﺶ ﺍﺯ ﺳﻮﻱ ﺻﺎﺩﺭﻛﻨﻨﺪﻩ ﻛﺎﺭﺕ ﺭﺩ ﺷﺪﻩ ﺍﺳﺖ ',
             '99' => 'ﺧﻄﺎﻱ ﺻﺎﺩﺭ ﻛﻨﻨﺪﮔﻲ 	',
-            '200' => 'ﺳﺎﻳﺮ ﺧﻄﺎﻫﺎﻱ ﻧﮕﺎﺷﺖ ﻧﺸﺪﻩ ﺳﺎﻣﺎﻧﻪ ﻫﺎﻱ ﺑﺎﻧﻜﻲ'
+            '200' => 'ﺳﺎﻳﺮ ﺧﻄﺎﻫﺎﻱ ﻧﮕﺎﺷﺖ ﻧﺸﺪﻩ ﺳﺎﻣﺎﻧﻪ ﻫﺎﻱ ﺑﺎﻧﻜﻲ',
         ];
 
-        return array_key_exists($statusCode, $messages) ? $messages[$statusCode] : $statusCode;
+        return array_key_exists($statusCode, $messages) ? $messages[$statusCode] : 'خطای تعریف نشده رخ داد.';
     }
 
     protected function getSuccessResponseStatusCode(): int
@@ -416,7 +418,7 @@ class Parsian extends Driver
     private function getSoapOptions(): array
     {
         return config('gateway_parsian.soap_options', [
-            'encoding' => 'UTF-8'
+            'encoding' => 'UTF-8',
         ]);
     }
 }

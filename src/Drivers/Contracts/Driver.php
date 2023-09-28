@@ -38,7 +38,7 @@ abstract class Driver implements PurchaseInterface
 
     abstract protected function getVerificationData(): array;
 
-    abstract protected function getStatusMessage($statusCode): string;
+    abstract protected function getStatusMessage(int|string $statusCode): string;
 
     abstract protected function getSuccessResponseStatusCode();
 
@@ -48,7 +48,7 @@ abstract class Driver implements PurchaseInterface
 
     abstract protected function getVerificationUrl(): string;
 
-    protected function redirect($action, array $inputs = [], $method = 'POST'): RedirectionForm
+    protected function redirect(string $action, array $inputs = [], string $method = 'POST'): RedirectionForm
     {
         return new RedirectionForm($action, $inputs, $method);
     }

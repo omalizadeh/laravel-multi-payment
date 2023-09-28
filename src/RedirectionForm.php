@@ -11,8 +11,8 @@ use Illuminate\Http\JsonResponse;
 
 class RedirectionForm implements Arrayable, Responsable
 {
-    protected string $method;
     protected array $inputs;
+    protected string $method;
     protected string $action;
 
     /**
@@ -30,7 +30,7 @@ class RedirectionForm implements Arrayable, Responsable
     /**
      * @return string
      */
-    public function getUrl(): string
+    public function getAction(): string
     {
         return $this->action;
     }
@@ -64,6 +64,16 @@ class RedirectionForm implements Arrayable, Responsable
     }
 
     /**
+     * Renders a view that redirects to payment gateway automatically.
+     *
+     * @return Application|Factory|View
+     */
+    public function view(): Factory|View|Application
+    {
+        return view('multipayment::redirect_to_gateway', $this->toArray());
+    }
+
+    /**
      * Returns redirection form data as array.
      *
      * @return array
@@ -71,34 +81,14 @@ class RedirectionForm implements Arrayable, Responsable
     public function toArray(): array
     {
         return [
-            'action' => $this->getUrl(),
+            'action' => $this->getAction(),
             'inputs' => $this->getInputs(),
             'method' => $this->getMethod(),
         ];
     }
 
-    /**
-     * Renders a view that redirects to payment gateway automatically.
-     *
-     * @return Application|Factory|View
-     */
-    public function view()
-    {
-        return view('multipayment::gateway_redirect', $this->toArray());
-    }
-
     public function toResponse($request): JsonResponse
     {
         return $this->toJsonResponse();
-    }
-
-    /**
-     * @return Application|Factory|View
-     *
-     * @deprecated
-     */
-    public function render()
-    {
-        return view('multipayment::gateway_redirect', $this->toArray());
     }
 }

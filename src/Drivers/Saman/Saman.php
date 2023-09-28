@@ -16,13 +16,13 @@ class Saman extends Driver
 {
     public function purchase(): string
     {
+        $purchaseData = $this->getPurchaseData();
         $response = Http::withHeaders($this->getRequestHeaders())
-            ->post($this->getPurchaseUrl(), $this->getPurchaseData());
+            ->post($this->getPurchaseUrl(), $purchaseData);
 
         if ($response->successful()) {
-
             if ((int) $response['status'] !== $this->getSuccessResponseStatusCode()) {
-                throw new PurchaseFailedException($response['errorDesc'], $response['errorCode']);
+                throw new PurchaseFailedException($response['errorDesc'], $response['errorCode'], $purchaseData);
             }
 
             $this->getInvoice()->setToken($response['token']);
@@ -30,7 +30,7 @@ class Saman extends Driver
             return $this->getInvoice()->getInvoiceId();
         }
 
-        throw new PurchaseFailedException($response->body(), $response->status());
+        throw new PurchaseFailedException($response->body(), $response->status(), $purchaseData);
     }
 
     public function pay(): RedirectionForm
@@ -73,7 +73,7 @@ class Saman extends Driver
 
         $cellNumber = $this->getInvoice()->getPhoneNumber();
 
-        if (!empty($cellNumber)) {
+        if (! empty($cellNumber)) {
             $cellNumber = $this->checkPhoneNumberFormat($cellNumber);
         }
 
@@ -91,11 +91,11 @@ class Saman extends Driver
     {
         return [
             'RefNum' => request('RefNum', $this->getInvoice()->getTransactionId()),
-            'MerchantID' => $this->settings['terminal_id']
+            'MerchantID' => $this->settings['terminal_id'],
         ];
     }
 
-    protected function getStatusMessage($statusCode): string
+    protected function getStatusMessage(int|string $statusCode): string
     {
         $messages = [
             -1 => 'خطا در پردازش اطلاعات ارسالی (مشکل در یکی از ورودی ها و ناموفق بودن فراخوانی متد برگشت تراکنش)',
@@ -124,9 +124,8 @@ class Saman extends Driver
             11 => 'با این شماره ترمینال فقط تراکنش های توکنی قابل پرداخت هستند.',
             12 => 'شماره ترمینال ارسال شده یافت نشد.',
         ];
-        $unknownError = 'خطای ناشناخته رخ داده است.';
 
-        return array_key_exists($statusCode, $messages) ? $messages[$statusCode] : $unknownError;
+        return array_key_exists($statusCode, $messages) ? $messages[$statusCode] : 'خطای تعریف نشده رخ داده است.';
     }
 
     protected function getSuccessResponseStatusCode(): int
@@ -157,8 +156,9 @@ class Saman extends Driver
     private function getCallbackMethod()
     {
         if (isset($this->settings['callback_method']) && strtoupper($this->settings['callback_method']) === 'GET') {
-            return "true";
+            return 'true';
         }
+
         return null;
     }
 
@@ -188,6 +188,7 @@ class Saman extends Driver
         if (strlen($phoneNumber) === 10) {
             return '98'.$phoneNumber;
         }
+
         return $phoneNumber;
     }
 }

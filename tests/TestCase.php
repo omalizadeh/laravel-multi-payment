@@ -6,14 +6,14 @@ use Omalizadeh\MultiPayment\Providers\MultiPaymentServiceProvider;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
-    protected function getPackageProviders($app)
+    protected function getPackageProviders($app): array
     {
         return [
-            MultiPaymentServiceProvider::class
+            MultiPaymentServiceProvider::class,
         ];
     }
 
-    protected function getEnvironmentSetUp($app)
+    protected function getEnvironmentSetUp($app): void
     {
         $zarinpalSettings = require __DIR__.'../../config/gateway_zarinpal.php';
 

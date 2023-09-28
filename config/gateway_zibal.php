@@ -3,21 +3,21 @@
 return [
 
     /**
-     *  driver class namespace
+     *  driver class namespace.
      */
     'driver' => Omalizadeh\MultiPayment\Drivers\Zibal\Zibal::class,
 
     /**
-     *  gateway configurations
+     *  gateway configurations.
      */
     'main' => [
-        'merchant'  => '', // use 'zibal' for sandbox (testing) mode
+        'merchant' => '', // use 'zibal' to enable sandbox (testing) mode
         'callback_url' => 'https://yoursite.com/path/to',
         'description' => 'payment using zarinpal',
     ],
     'other' => [
-        'merchant'  => '',
+        'merchant' => '',
         'callback_url' => 'https://yoursite.com/path/to',
         'description' => 'payment using zarinpal',
-    ]
+    ],
 ];

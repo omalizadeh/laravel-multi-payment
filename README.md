@@ -6,7 +6,7 @@
 # Laravel Online Payment Gateway Package
 
 This is a laravel gateway payment package with multi driver support. Each driver can have multiple configurations.
-Supports laravel **v7.0+** and requires php **v7.4+**
+Supports laravel **v8.0+** and requires php **v8.1+**
 
 > Star! if you liked this package.
 
@@ -41,7 +41,7 @@ Publish main config file
   php artisan vendor:publish --tag=multipayment-config
 ```
 
-Publish gateway config file based on these tags.
+Publish gateway config file based on tags. like:
 - zarinpal-config
 - mellat-config
 - saman-config
@@ -67,7 +67,7 @@ In main config file `multipayment.php`, you can specify default driver. For exam
      * 
      * valid pattern --> GATEWAY_NAME.GATEWAY_CONFIG_KEY 
      */
-    'default_gateway' => env('DEFAULT_GATEWAY', 'zarinpal.second'),
+    'default_gateway' => env('DEFAULT_PAYMENT_GATEWAY', 'zarinpal.second'),
 
     /**
      *  set to false if your in-app currency is IRR
@@ -75,7 +75,7 @@ In main config file `multipayment.php`, you can specify default driver. For exam
     'convert_to_rials' => true
 ```
 
-In each gateway config file, you can specify multiple credentials and therefore you may have multiple gateways for your app.
+In each gateway config file, you can specify multiple credentials, therefore you may have multiple gateways for your app from same provider.
 
 ```php
      /**
@@ -98,12 +98,12 @@ In each gateway config file, you can specify multiple credentials and therefore 
 ## Usage
 
 Gateway payment has two major phases. first is purchase (start process by calling gateway api for a
-transaction_id/token) and opening gateway payment web page. second is verification (checking
+transaction_id/token) and opening gateway payment web page with received data. second is verification (checking
 payment was successful).
 
 ### Purchase
 
-`Inovice` objects hold payment data. first you create an invoice, set amount and other information, then you pass invoice to `PaymentGateway` Facade to start payment process. you can use `setGateway` method on facade to change gateway before payment.
+`Inovice` objects hold payment data. first you create an invoice, set amount and other information, then you pass invoice to `PaymentGateway` Facade to start payment process. you can use `setProvider` method on facade to change gateway before payment.
 
 ```php
     // On top...
@@ -142,11 +142,11 @@ After payment gateway redirection to your app, you must create an invoice and se
 
 #### Unverified Payments
 
-There is also a method (supported by zarinpal) to get a list of successful unverified payments. use `unverifiedPayments` method in `PaymentGateway` facade for this feature.
+There is also a method (supported by zarinpal only for now) to get a list of successful unverified payments. use `unverifiedPayments` method in `PaymentGateway` facade for this feature.
 
 #### Refund
 
-Using `refund` method, you can refund a successful payment back to customer. Make sure you have authorization token in config file.
+Using `refund` method, you can refund a successful payment back to customer.
 
 [readme-link-fa]: README-FA.md
 

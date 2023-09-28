@@ -30,7 +30,7 @@ class RSAProcessor
     }
 
     /**
-     * Retrieve public key
+     * Retrieve public key.
      *
      * @return string|null
      */
@@ -40,7 +40,7 @@ class RSAProcessor
     }
 
     /**
-     * Retrieve private key
+     * Retrieve private key.
      *
      * @return string|null
      */
@@ -50,9 +50,9 @@ class RSAProcessor
     }
 
     /**
-     * Retrieve key length
+     * Retrieve key length.
      *
-     * @return integer
+     * @return int
      */
     public function getKeyLength()
     {
@@ -60,7 +60,7 @@ class RSAProcessor
     }
 
     /**
-     * Retrieve modulus
+     * Retrieve modulus.
      *
      * @return string|null
      */
@@ -70,7 +70,7 @@ class RSAProcessor
     }
 
     /**
-     * Encrypt given data
+     * Encrypt given data.
      *
      * @param string $data
      *
@@ -82,7 +82,7 @@ class RSAProcessor
     }
 
     /**
-     * Decrypt given data
+     * Decrypt given data.
      *
      * @param $data
      *
@@ -94,7 +94,7 @@ class RSAProcessor
     }
 
     /**
-     * Sign given data
+     * Sign given data.
      *
      * @param string $data
      *
@@ -106,11 +106,11 @@ class RSAProcessor
     }
 
     /**
-     * Verify RSA data
+     * Verify RSA data.
      *
      * @param string $data
      *
-     * @return boolean
+     * @return bool
      */
     public function verify($data)
     {

@@ -3,19 +3,19 @@
 return [
 
     /**
-     *  driver class namespace
+     *  driver class namespace.
      */
     'driver' => Omalizadeh\MultiPayment\Drivers\Mellat\Mellat::class,
 
     /**
-     *  soap client options
+     *  soap client options.
      */
     'soap_options' => [
         'encoding' => 'UTF-8',
     ],
 
     /**
-     *  gateway configurations
+     *  gateway configurations.
      */
     'main' => [
         'terminal_id' => '',
@@ -30,5 +30,5 @@ return [
         'password' => '',
         'callback_url' => 'https://yoursite.com/path/to',
         'description' => 'payment using mellat gateway',
-    ]
+    ],
 ];

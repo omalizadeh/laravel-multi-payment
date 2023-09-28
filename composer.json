@@ -34,13 +34,13 @@
         }
     ],
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^8.1",
         "ext-json": "*",
-        "guzzlehttp/guzzle": "^6.5.5 || ^7.5",
-        "illuminate/contracts": "^7.0 || ^8.0 || ^9.0 || ^10.0",
-        "illuminate/http": "^7.0 || ^8.0 || ^9.0 || ^10.0",
-        "illuminate/support": "^7.0 || ^8.0 || ^9.0 || ^10.0",
-        "ramsey/uuid": "^4.0"
+        "guzzlehttp/guzzle": "^7.5",
+        "illuminate/contracts": "^8.0 || ^9.0 || ^10.0",
+        "illuminate/http": "^8.0 || ^9.0 || ^10.0",
+        "illuminate/support": "^8.0 || ^9.0 || ^10.0",
+        "ramsey/uuid": "^4.7"
     },
     "suggest": {
         "ext-bcmath": "Needed to use pasargad gateway",
@@ -49,7 +49,8 @@
         "ext-soap": "Needed to use SOAP drivers: mellat, saman"
     },
     "require-dev": {
-        "orchestra/testbench": "^6.27 || ^7.24 || ^8.5"
+        "friendsofphp/php-cs-fixer": "^3.16",
+        "orchestra/testbench": "^8.5"
     },
     "autoload": {
         "psr-4": {
@@ -75,7 +76,9 @@
         }
     },
     "scripts": {
-        "test": "phpunit --color=always"
+        "test": "./vendor/bin/phpunit --color=always",
+        "cs-check": "./vendor/bin/php-cs-fixer fix -v --dry-run --show-progress=dots",
+        "cs-fix": "./vendor/bin/php-cs-fixer fix -v --show-progress=dots"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

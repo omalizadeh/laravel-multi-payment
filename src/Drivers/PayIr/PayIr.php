@@ -16,11 +16,13 @@ class PayIr extends Driver
 {
     public function purchase(): string
     {
+        $purchaseData = $this->getPurchaseData();
         $response = $this->callApi($this->getPurchaseUrl(), $this->getPurchaseData());
 
         if ($response['status'] !== $this->getSuccessResponseStatusCode()) {
             $message = $response['errorMessage'] ?? $this->getStatusMessage($response['errorCode']);
-            throw new PurchaseFailedException($message, $response['errorCode']);
+
+            throw new PurchaseFailedException($message, $response['errorCode'], $purchaseData);
         }
 
         $this->getInvoice()->setToken($response['token']);
@@ -50,6 +52,7 @@ class PayIr extends Driver
 
         if ($response['status'] !== $this->getSuccessResponseStatusCode()) {
             $message = $response['errorMessage'] ?? $this->getStatusMessage($response['errorCode']);
+
             throw new PaymentFailedException($message, $response['errorCode']);
         }
 
@@ -59,7 +62,7 @@ class PayIr extends Driver
             $this->getInvoice(),
             $response['transId'],
             null,
-            $response['cardNumber']
+            $response['cardNumber'],
         );
     }
 
@@ -73,7 +76,7 @@ class PayIr extends Driver
 
         $mobile = $this->getInvoice()->getPhoneNumber();
 
-        if (!empty($mobile)) {
+        if (! empty($mobile)) {
             $mobile = $this->checkPhoneNumberFormat($mobile);
         }
 
@@ -97,7 +100,7 @@ class PayIr extends Driver
         ];
     }
 
-    protected function getStatusMessage($statusCode): string
+    protected function getStatusMessage(int|string $statusCode): string
     {
         $messages = [
             '0' => 'درحال حاضر درگاه بانکی قطع شده و مشکل بزودی برطرف می شود',
@@ -129,9 +132,7 @@ class PayIr extends Driver
             '-26' => 'امکان انجام تراکنش برای این درگاه وجود ندارد',
         ];
 
-        $unknownError = 'خطای ناشناخته رخ داده است.';
-
-        return array_key_exists($statusCode, $messages) ? $messages[$statusCode] : $unknownError;
+        return array_key_exists($statusCode, $messages) ? $messages[$statusCode] : 'خطای تعریف نشده رخ داده است.';
     }
 
     protected function getSuccessResponseStatusCode(): int

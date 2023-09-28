@@ -17,12 +17,13 @@ class Zibal extends Driver
 {
     public function purchase(): string
     {
-        $response = $this->callApi($this->getPurchaseUrl(), $this->getPurchaseData());
+        $purchaseData = $this->getPurchaseData();
+        $response = $this->callApi($this->getPurchaseUrl(), $purchaseData);
 
         if ($response['result'] !== $this->getSuccessResponseStatusCode()) {
             $message = $this->getStatusMessage($response['result']);
 
-            throw new PurchaseFailedException($message, $response['result']);
+            throw new PurchaseFailedException($message, $response['result'], $purchaseData);
         }
 
         $this->getInvoice()->setTransactionId($response['trackId']);
@@ -72,7 +73,7 @@ class Zibal extends Driver
             $this->getInvoice(),
             $refNum,
             $refNum,
-            $response['cardNumber']
+            $response['cardNumber'],
         );
     }
 
@@ -86,7 +87,7 @@ class Zibal extends Driver
 
         $mobile = $this->getInvoice()->getPhoneNumber();
 
-        if (!empty($mobile)) {
+        if (! empty($mobile)) {
             $mobile = $this->checkPhoneNumberFormat($mobile);
         }
 

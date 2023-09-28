@@ -20,8 +20,8 @@
 
 ## حداقل نیازمندی‌ها
 
-- **PHP v7.4**
-- **Laravel v7.0**
+- **PHP v8.1**
+- **Laravel v8.0**
 
 ## درگاه های پشتیبانی شده
 
@@ -54,14 +54,12 @@
 ```
 
 <div dir="rtl">
-انتشار فایل تنظیمات درگاه مورد نظر با استفاده از تگ هر درگاه
+انتشار فایل تنظیمات درگاه مورد نظر با استفاده از تگ هر درگاه، مانند:
 </div>
 
 - zarinpal-config
 - mellat-config
 - saman-config
-- pasargad-config
-- novin-config
 
 <div dir="rtl">
 به عنوان مثال از دستور زیر می توان برای انتشار فایل تنظیمات درگاه زرین پال استفاده کرد:
@@ -92,7 +90,7 @@
      * 
      * valid pattern --> GATEWAY_NAME.GATEWAY_CONFIG_KEY 
      */
-    'default_gateway' => env('DEFAULT_GATEWAY', 'zarinpal.second'),
+    'default_gateway' => env('DEFAULT_PAYMENT_GATEWAY', 'zarinpal.second'),
 
     /**
      *  set to false if your in-app currency is IRR
@@ -155,14 +153,14 @@
 
 <div dir="rtl">
 
-با افزودن شماره همراه کاربر به صورتحساب، درگاه برای تجربه کاربری بهتر، شماره کارت های ثبت شده با آن را هنگام پرداخت به پرداخت کننده پیشنهاد می دهد. قبل از صدا زدن متد purchase برای خرید، می توان با استفاده از متد setGateway درگاه مورد استفاده را تغییر داد.
+با افزودن شماره همراه کاربر به صورتحساب، درگاه برای تجربه کاربری بهتر، شماره کارت های ثبت شده با آن را هنگام پرداخت به پرداخت کننده پیشنهاد می دهد. قبل از صدا زدن متد purchase برای خرید، می توان با استفاده از متد setProvider درگاه مورد استفاده را تغییر داد.
 
 </div>
 
 ```php
     $invoice = new Invoice(10000);
 
-    return PaymentGateway::setGateway('mellat.app')
+    return PaymentGateway::setProvider('mellat', 'first')
             ->purchase($invoice, function (string $transactionId) {
                 // Save transaction_id and do stuff...
             })->view();
@@ -197,7 +195,7 @@
 خروجی تایید پرداخت، یک شیء از کلاس `Receipt` است که می توان از متدهای مختلف آن برای بدست آوردن اطلاعات مختلف استفاده
 کرد.
 
-- `getInvoiceId`: شناسه صورتحساب
+- `getInvoiceId`: شناسه صورتحساب/فاکتور
 - `getTransactionId`: شناسه تراکنش
 - `getTraceNumber`: شماره پیگیری
 - `getReferenceId`: شماره ارجاع بانکی

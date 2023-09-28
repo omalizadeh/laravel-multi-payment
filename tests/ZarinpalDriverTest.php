@@ -8,7 +8,7 @@ use Omalizadeh\MultiPayment\Invoice;
 
 class ZarinpalDriverTest extends TestCase
 {
-    public function testInvoiceCanBePurchased(): void
+    public function test_invoice_can_be_purchased(): void
     {
         $invoice = new Invoice(1200);
 
@@ -16,9 +16,9 @@ class ZarinpalDriverTest extends TestCase
             'https://sandbox.zarinpal.com/pg/v4/payment/request.json' => Http::response([
                 'data' => [
                     'code' => 100,
-                    'authority' => 'testing-authority'
-                ]
-            ])
+                    'authority' => 'testing-authority',
+                ],
+            ]),
         ]);
 
         $redirect = PaymentGateway::purchase($invoice)->toArray();
@@ -27,7 +27,7 @@ class ZarinpalDriverTest extends TestCase
         $this->assertStringContainsString('testing-authority', $redirect['action']);
     }
 
-    public function testInvoiceCanBeVerified(): void
+    public function test_paid_invoice_can_be_verified(): void
     {
         Http::fake([
             'https://sandbox.zarinpal.com/pg/v4/payment/verify.json' => Http::response([
@@ -35,8 +35,8 @@ class ZarinpalDriverTest extends TestCase
                     'code' => 100,
                     'card_pan' => '66-****-99',
                     'ref_id' => '111111',
-                ]
-            ])
+                ],
+            ]),
         ]);
 
         $invoice = new Invoice(1200, 'testing-transaction');
@@ -47,7 +47,7 @@ class ZarinpalDriverTest extends TestCase
         $this->assertEquals('66-****-99', $receipt->getCardNumber());
     }
 
-    public function testPaymentCanBeRefunded(): void
+    public function test_payment_can_be_refunded(): void
     {
         Http::fake([
             'https://sandbox.zarinpal.com/pg/v4/payment/refund.json' => Http::response([
@@ -56,8 +56,8 @@ class ZarinpalDriverTest extends TestCase
                     'iban' => 'IR-XXX-XXXX',
                     'ref_id' => 456666,
                     'session' => 4654552213,
-                ]
-            ])
+                ],
+            ]),
         ]);
 
         $invoice = new Invoice(1200, 'testing-transaction');
@@ -67,7 +67,7 @@ class ZarinpalDriverTest extends TestCase
         $this->assertEquals('IR-XXX-XXXX', $response['iban']);
     }
 
-    public function testUnverifiedPaymentsList(): void
+    public function test_unverified_payments_can_be_fetched(): void
     {
         Http::fake([
             'https://sandbox.zarinpal.com/pg/v4/payment/unVerified.json' => Http::response([
@@ -83,7 +83,7 @@ class ZarinpalDriverTest extends TestCase
                         ],
                     ],
                 ],
-            ])
+            ]),
         ]);
 
         $unverifiedPayments = PaymentGateway::unverifiedPayments();
