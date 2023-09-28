@@ -41,28 +41,6 @@ class Gateway
     }
 
     /**
-     * start payment process for given invoice
-     *
-     * @param  Invoice  $invoice
-     * @param  Closure|null  $callback
-     * @return RedirectionForm
-     * @throws DriverNotFoundException
-     */
-    public function purchaseView(Invoice $invoice, ?Closure $callback = null)
-    {
-        $this->validateDriverInterfaceImplementation(PurchaseInterface::class);
-
-        $view = $this->getDriver()->setInvoice($invoice)->purchaseView();
-
-        return $view;
-    }
-
-
-    public function getPurchaseData($invoice) {
-        return $this->getDriver()->setInvoice($invoice)->getPurchaseData();
-    }
-
-    /**
      * verify payment was successful
      *
      * @param  Invoice  $invoice
