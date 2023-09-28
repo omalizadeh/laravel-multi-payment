@@ -275,7 +275,8 @@ class Invoice
 
     /**
      * @param  array  $billing
-     * @return \App\Classes\Invoice
+     * @return Invoice
+     * @throws InvalidConfigurationException
      */
     public function setBilling(array $billing): Invoice
     {
@@ -325,16 +326,5 @@ class Invoice
 
         $this->products = $product;
         return $this;
-    }
-    /**
-     * @return array
-     */
-    public function getCustomerInfo(): array
-    {
-        return [
-            'user_id' => $this->getUserId(),
-            'phone' => $this->getPhoneNumber(),
-            'email' => $this->getEmail(),
-        ];
     }
 }
