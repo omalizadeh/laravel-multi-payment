@@ -4,7 +4,6 @@ namespace Omalizadeh\MultiPayment\Drivers\Shepa;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Omalizadeh\MultiPayment\Drivers\Contracts\Driver;
@@ -102,7 +101,7 @@ class Shepa extends Driver
 
     public function pay(): RedirectionForm
     {
-        return $this->redirect($this->getPaymentUrl());
+        return $this->redirect($this->getPaymentUrl(), [], 'GET');
     }
 
     protected function getPaymentUrl(): string
