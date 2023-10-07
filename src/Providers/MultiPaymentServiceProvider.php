@@ -74,6 +74,10 @@ class MultiPaymentServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../../config/gateway_payir.php' => config_path('gateway_payir.php'),
             ], 'payir-config');
+
+            $this->publishes([
+                __DIR__.'/../../config/gateway_paystar.php' => config_path('gateway_paystar.php'),
+            ], 'paystar-config');
         }
     }
 }
