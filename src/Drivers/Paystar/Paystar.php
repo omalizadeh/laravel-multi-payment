@@ -156,9 +156,9 @@ class Paystar extends Driver
         $response = Http::withHeaders($headers)->post($url, $data);
 
         if ($response->successful()) {
-            return $response;
+            return $response->json();
         }
-        throw new HttpRequestFailedException($response, $response);
+        throw new HttpRequestFailedException($response->status(), $response->code());
     }
 
     private function checkPhoneNumberFormat(string $phoneNumber): string
