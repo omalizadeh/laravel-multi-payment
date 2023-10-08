@@ -1,22 +1,25 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="en">
+
 <head>
-    <title>انتقال به درگاه پرداخت</title>
+    <meta charset="UTF-8">
+    <title>درحال انتقال به درگاه پرداخت</title>
     <style>
-        .message {
+        .text-center {
             text-align: center;
-            margin-top: 4em;
-            font-size: 24px;
-            font-weight: bold;
+        }
+
+        .mt-2 {
+            margin-top: 2em;
         }
 
         .spinner {
-            margin: 50px auto 0;
+            margin: 100px auto 0;
             width: 70px;
             text-align: center;
         }
 
-        .spinner > div {
+        .spinner>div {
             width: 18px;
             height: 18px;
             background-color: #333;
@@ -37,49 +40,80 @@
         }
 
         @-webkit-keyframes sk-bouncedelay {
+
             0%,
             80%,
             100% {
                 -webkit-transform: scale(0)
             }
+
             40% {
                 -webkit-transform: scale(1.0)
             }
         }
 
         @keyframes sk-bouncedelay {
+
             0%,
             80%,
             100% {
                 -webkit-transform: scale(0);
                 transform: scale(0);
             }
+
             40% {
                 -webkit-transform: scale(1.0);
                 transform: scale(1.0);
             }
         }
-
     </style>
 </head>
-<body dir="rtl" onload="submitForm()">
-<div class="message">در حال انتقال به درگاه پرداخت. لطفا چند ثانیه صبر کنید...</div>
+
+<body onload="submitForm();">
 <div class="spinner">
     <div class="bounce1"></div>
     <div class="bounce2"></div>
     <div class="bounce3"></div>
 </div>
-<form id="hidden-form" action="@php htmlentities($action) @endphp" method="@php $method @endphp">
-    @foreach($inputs as $key => $value)
-        <input type="hidden" name="@php $key @endphp" value="@php $value @endphp">
-    @endforeach
+<form class="text-center mt-2" method="<?php echo htmlentities($method) ?>"
+      action="<?php echo htmlentities($action) ?>">
+    <p>در حال انتقال به درگاه پرداخت</p>
+    <p>
+        اگر بصورت اتوماتیک به درگاه منتقل نشدید بعد از
+        <span id="countdown">10</span>
+        ثانیه ...
+    </p>
+
+    <?php foreach ($inputs as $name => $value): ?>
+    <input type="hidden" name="<?php echo htmlentities($name) ?>" value="<?php echo htmlentities($value) ?>">
+    <?php endforeach; ?>
+
+    <button type="submit">کلیک کنید</button>
 </form>
-
 <script>
-    function submitForm() {
-        document.getElementById("hidden-form").submit();
-    }
-</script>
+    // Total seconds to wait
+    var seconds = 10;
 
+    function submitForm() {
+        document.forms[0].submit();
+    }
+
+    function countdown() {
+        seconds = seconds - 1;
+        if (seconds <= 0) {
+            // submit the form
+            submitForm();
+        } else {
+            // Update remaining seconds
+            document.getElementById("countdown").innerHTML = seconds;
+            // Count down using javascript
+            window.setTimeout("countdown()", 1000);
+        }
+    }
+
+    // Run countdown function
+    countdown();
+</script>
 </body>
+
 </html>
