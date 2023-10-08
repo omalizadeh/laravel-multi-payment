@@ -20,15 +20,17 @@ class Paystar extends Driver
     {
         $purchaseData = $this->getPurchaseData();
         $response = $this->callApi($this->getPurchaseUrl(), $this->getPurchaseData());
+
         if ($response['status'] !== $this->getSuccessResponseStatusCode()) {
             $message = $response['message'] ?? $this->getStatusMessage($response['status']);
 
-            throw new PurchaseFailedException($message, $response['errorCode'], $purchaseData);
+            throw new PurchaseFailedException($message, $response['status'], $purchaseData);
         }
 
-        $this->getInvoice()->setToken($response['token']);
+        $this->getInvoice()->setToken($response['data']['token']);
+        $this->getInvoice()->setTransactionId($response['data']['ref_num']);
 
-        return $this->getInvoice()->getInvoiceId();
+        return $this->getInvoice()->getTransactionId();
     }
 
     public function pay(): RedirectionForm
@@ -36,9 +38,8 @@ class Paystar extends Driver
         $token = $this->getInvoice()->getToken();
 
         $paymentUrl = $this->getPaymentUrl();
-        $paymentUrl .= $token;
 
-        return $this->redirect($paymentUrl, [], 'GET');
+        return $this->redirect($paymentUrl, ['token'=>$token]);
     }
 
     public function verify(): Receipt
@@ -52,18 +53,18 @@ class Paystar extends Driver
         $response = $this->callApi($this->getVerificationUrl(), $this->getVerificationData());
 
         if ($response['status'] !== $this->getSuccessResponseStatusCode()) {
-            $message = $response['errorMessage'] ?? $this->getStatusMessage($response['errorCode']);
+            $message = $response['message'] ?? $this->getStatusMessage($response['status']);
 
-            throw new PaymentFailedException($message, $response['errorCode']);
+            throw new PaymentFailedException($message, $response['status']);
         }
 
-        $this->getInvoice()->setTransactionId($response['transId']);
+        $this->getInvoice()->setTransactionId($response['data']['ref_num']);
 
         return new Receipt(
             $this->getInvoice(),
-            $response['transId'],
+            $response['data']['ref_num'],
             null,
-            $response['cardNumber'],
+            $response['data']['card_number'],
         );
     }
 
@@ -83,23 +84,20 @@ class Paystar extends Driver
 
         $callback=$this->getInvoice()->getCallbackUrl() ?: $this->settings['callback'];
         return [
-            'pin' => $this->settings['pin'],
             'amount' => $this->getInvoice()->getAmount(),
             'callback' => $callback,
             'mobile' => $mobile,
             'order_id' => $this->getInvoice()->getInvoiceId(),
             'description' => $description,
-            'sign'=>hash_hmac('sha512',$this->getInvoice()->getAmount().'#'.$this->getInvoice()->getInvoiceId().'#'.$callback, $this->settings['secret'])
         ];
     }
 
     protected function getVerificationData(): array
     {
-        $token = request('token', $this->getInvoice()->getToken());
 
         return [
-            'pin' => $this->settings['pin'],
-            'token' => $token,
+            'ref_num'=>$this->getInvoice()->getTransactionId(),
+            'amount'=>$this->getInvoice()->getAmount()
         ];
     }
 
@@ -129,17 +127,17 @@ class Paystar extends Driver
 
     protected function getPurchaseUrl(): string
     {
-        return 'https://core.paystar.ir/api/direct/create';
+        return 'https://core.paystar.ir/api/pardakht/create';
     }
 
     protected function getPaymentUrl(): string
     {
-        return 'https://core.paystar.ir/api/direct';
+        return 'https://core.paystar.ir/api/pardakht/payment';
     }
 
     protected function getVerificationUrl(): string
     {
-        return 'https://core.paystar.ir/api/direct/payment';
+        return 'https://core.paystar.ir/api/pardakht/verify';
     }
 
     private function getRequestHeaders(): array
@@ -147,7 +145,7 @@ class Paystar extends Driver
         return [
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
-            'Authorization: Bearer '.$this->settings['pin']
+            'Authorization'=> 'Bearer '.$this->settings['pin']
         ];
     }
 
