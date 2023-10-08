@@ -11,7 +11,7 @@ return [
      *  gateway configurations.
      */
     'main' => [
-        'pin' => 'exg1m6l481zxy1',
+        'pin' => '',
         'secret' => '',
         'callback' => 'https://yoursite.com/path/to',
         'description' => 'payment using paystar',
