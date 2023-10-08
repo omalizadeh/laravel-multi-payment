@@ -12,11 +12,13 @@ return [
      */
     'main' => [
         'pin' => 'exg1m6l481zxy1',
+        'secret' => '',
         'callback' => 'https://yoursite.com/path/to',
         'description' => 'payment using paystar',
     ],
     'other' => [
         'pin' => '',
+        'secret' => '',
         'callback' => 'https://yoursite.com/path/to',
         'description' => 'payment using paystar',
     ],
