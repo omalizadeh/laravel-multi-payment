@@ -81,13 +81,15 @@ class Paystar extends Driver
             $mobile = $this->checkPhoneNumberFormat($mobile);
         }
 
+        $callback=$this->getInvoice()->getCallbackUrl() ?: $this->settings['callback'];
         return [
             'pin' => $this->settings['pin'],
             'amount' => $this->getInvoice()->getAmount(),
-            'callback' => $this->getInvoice()->getCallbackUrl() ?: $this->settings['callback'],
+            'callback' => $callback,
             'mobile' => $mobile,
             'order_id' => $this->getInvoice()->getInvoiceId(),
             'description' => $description,
+            'sign'=>hash_hmac('sha512',$this->getInvoice()->getAmount().'#'.$this->getInvoice()->getInvoiceId().'#'.$callback, $this->settings['secret'])
         ];
     }
 
