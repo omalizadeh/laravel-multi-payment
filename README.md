@@ -26,6 +26,8 @@ Supports laravel **v8.0+** and requires php **v8.1+**
 - [IDPay](https://idpay.ir)
 - [Pay.ir](https://pay.ir)
 - [Zibal](https://zibal.ir)
+- [PayStar](https://paystar.ir)
+
 
 ## Installation & Configuration
 
