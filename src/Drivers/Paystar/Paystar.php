@@ -70,8 +70,8 @@ class Paystar extends Driver
 
     protected function getPurchaseData(): array
     {
-        if (empty($this->settings['pin'])) {
-            throw new InvalidConfigurationException('Pin key has not been set.');
+        if (empty($this->settings['gateway_id'])) {
+            throw new InvalidConfigurationException('gateway_id key has not been set.');
         }
 
         $description = $this->getInvoice()->getDescription() ?? $this->settings['description'];
@@ -145,7 +145,6 @@ class Paystar extends Driver
         return [
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
-            'Authorization'=> 'Bearer '.$this->settings['pin']
         ];
     }
 
@@ -153,7 +152,7 @@ class Paystar extends Driver
     {
         $headers = $this->getRequestHeaders();
 
-        $response = Http::withHeaders($headers)->post($url, $data);
+        $response = Http::withHeaders($headers)->withToken($this->settings['gateway_id'])->post($url, $data);
 
         if ($response->successful()) {
             return $response->json();
