@@ -11,14 +11,12 @@ return [
      *  gateway configurations.
      */
     'main' => [
-        'pin' => '',
-        'secret' => '',
+        'gateway_id' => '',
         'callback' => 'https://yoursite.com/path/to',
         'description' => 'payment using paystar',
     ],
     'other' => [
-        'pin' => '',
-        'secret' => '',
+        'gateway_id' => '',
         'callback' => 'https://yoursite.com/path/to',
         'description' => 'payment using paystar',
     ],
