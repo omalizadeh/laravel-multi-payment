@@ -29,6 +29,7 @@ class Paystar extends Driver
 
         $this->getInvoice()->setToken($response['data']['token']);
         $this->getInvoice()->setTransactionId($response['data']['ref_num']);
+        $this->getInvoice()->setInvoiceId($response['data']['order_id']);
 
         return $this->getInvoice()->getTransactionId();
     }
@@ -74,9 +75,27 @@ class Paystar extends Driver
             throw new InvalidConfigurationException('gateway_id key has not been set.');
         }
 
+        if (empty($this->settings['use_sign'])) {
+            throw new InvalidConfigurationException('use_sign key has not been set.');
+        }
+
+        if (empty($this->settings['type'])) {
+            throw new InvalidConfigurationException('type key has not been set.');
+        }
+
         $description = $this->getInvoice()->getDescription() ?? $this->settings['description'];
 
         $mobile = $this->getInvoice()->getPhoneNumber();
+        $email = $this->getInvoice()->getEmail();
+
+        if($this->settings['use_sign'])
+        {
+            if (empty($this->settings['secret_key'])) {
+                throw new InvalidConfigurationException('secret_key key has not been set.');
+            }
+
+            $sign=hash_hmac('sha512', $this->getInvoice()->getAmount().'#'.$this->getInvoice()->getInvoiceId().'#'.$this->settings['callback'], $this->settings['secret_key']);
+        }
 
         if (! empty($mobile)) {
             $mobile = $this->checkPhoneNumberFormat($mobile);
@@ -87,17 +106,30 @@ class Paystar extends Driver
             'amount' => $this->getInvoice()->getAmount(),
             'callback' => $callback,
             'mobile' => $mobile,
+            'email' => $email ?? '',
             'order_id' => $this->getInvoice()->getInvoiceId(),
             'description' => $description,
+            'sign'=>$sign ?? ''
         ];
     }
 
     protected function getVerificationData(): array
     {
+        $cartNumber = request('card_number');
+        $trackingCode = request('tracking_code');
+        if($this->settings['use_sign'])
+        {
+            if (empty($this->settings['secret_key'])) {
+                throw new InvalidConfigurationException('secret_key key has not been set.');
+            }
+
+            $sign=hash_hmac('sha512', $this->getInvoice()->getAmount().'#'.$this->getInvoice()->getTransactionId().'#'.$cartNumber.'#'.$trackingCode, $this->settings['secret_key']);
+        }
 
         return [
             'ref_num'=>$this->getInvoice()->getTransactionId(),
-            'amount'=>$this->getInvoice()->getAmount()
+            'amount'=>$this->getInvoice()->getAmount(),
+            'sign'=>$sign ?? ''
         ];
     }
 
@@ -114,7 +146,17 @@ class Paystar extends Driver
             '-108' => 'تراکنش را نمیتوان وریفای کرد',
             '-109' => 'تراکنش وریفای نشد',
             '-198' => 'تراکنش ناموفق',
-            '-199' => 'خطای سامانه',
+            '-1' => 'درخواست نامعتبر (خطا در پارامترهای ورودی)',
+            '-2' => 'درگاه فعال نیست',
+            '-3' => 'توکن تکراری است',
+            '-4' => 'مبلغ بیشتر از سقف مجاز درگاه است',
+            '-5' => 'شناسه ref_num معتبر نیست',
+            '-6' => 'تراکنش قبلا وریفای شده است',
+            '-7' => 'پارامترهای ارسال شده نامعتبر است',
+            '-8' => 'تراکنش را نمیتوان وریفای کرد',
+            '-9' => 'تراکنش وریفای نشد',
+            '-98' => 'تراکنش ناموفق',
+            '-99' => 'خطای سامانه',
         ];
 
         return array_key_exists($statusCode, $messages) ? $messages[$statusCode] : 'خطای تعریف نشده رخ داده است.';
@@ -127,17 +169,17 @@ class Paystar extends Driver
 
     protected function getPurchaseUrl(): string
     {
-        return 'https://core.paystar.ir/api/pardakht/create';
+        return 'https://core.paystar.ir/api/'.$this->settings['type'].'/create';
     }
 
     protected function getPaymentUrl(): string
     {
-        return 'https://core.paystar.ir/api/pardakht/payment';
+        return 'https://core.paystar.ir/api/'.$this->settings['type'].'/payment';
     }
 
     protected function getVerificationUrl(): string
     {
-        return 'https://core.paystar.ir/api/pardakht/verify';
+        return 'https://core.paystar.ir/api/'.$this->settings['type'].'/verify';
     }
 
     private function getRequestHeaders(): array
