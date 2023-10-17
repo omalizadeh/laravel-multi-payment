@@ -85,9 +85,6 @@ class Paystar extends Driver
             throw new InvalidConfigurationException('gateway_id key has not been set.');
         }
 
-        if (empty($this->settings['use_sign'])) {
-            throw new InvalidConfigurationException('use_sign key has not been set.');
-        }
 
         if (empty($this->settings['type'])) {
             throw new InvalidConfigurationException('type key has not been set.');
