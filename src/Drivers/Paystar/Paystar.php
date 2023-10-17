@@ -108,15 +108,26 @@ class Paystar extends Driver
         }
 
         $callback = $this->getInvoice()->getCallbackUrl() ?: $this->settings['callback'];
-        return [
-            'amount' => $this->getInvoice()->getAmount(),
-            'callback' => $callback,
-            'mobile' => $mobile,
-            'email' => $email ?? '',
-            'order_id' => $this->getInvoice()->getInvoiceId(),
-            'description' => $description,
-            'sign' => $sign ?? ''
-        ];
+        if ($this->settings['use_sign']) {
+            return [
+                'amount' => $this->getInvoice()->getAmount(),
+                'callback' => $callback,
+                'mobile' => $mobile,
+                'email' => $email ?? '',
+                'order_id' => $this->getInvoice()->getInvoiceId(),
+                'description' => $description,
+                'sign' => $sign ?? ''
+            ];
+        } else {
+            return [
+                'amount' => $this->getInvoice()->getAmount(),
+                'callback' => $callback,
+                'mobile' => $mobile,
+                'email' => $email ?? '',
+                'order_id' => $this->getInvoice()->getInvoiceId(),
+                'description' => $description
+            ];
+        }
     }
 
     /**
@@ -134,11 +145,20 @@ class Paystar extends Driver
             $sign = hash_hmac('sha512', $this->getInvoice()->getAmount() . '#' . $this->getInvoice()->getTransactionId() . '#' . $cartNumber . '#' . $trackingCode, $this->settings['secret_key']);
         }
 
-        return [
-            'ref_num' => $this->getInvoice()->getTransactionId(),
-            'amount' => $this->getInvoice()->getAmount(),
-            'sign' => $sign ?? ''
-        ];
+        if ($this->settings['use_sign']) {
+            return [
+                'ref_num' => $this->getInvoice()->getTransactionId(),
+                'amount' => $this->getInvoice()->getAmount(),
+                'sign' => $sign ?? ''
+            ];
+        } else {
+            return [
+                'ref_num' => $this->getInvoice()->getTransactionId(),
+                'amount' => $this->getInvoice()->getAmount(),
+            ];
+        }
+
+
     }
 
     protected function getStatusMessage(int|string $statusCode): string
