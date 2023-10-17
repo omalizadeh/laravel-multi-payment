@@ -14,6 +14,11 @@ use Omalizadeh\MultiPayment\RedirectionForm;
 
 class Paystar extends Driver
 {
+    /**
+     * @throws PurchaseFailedException
+     * @throws HttpRequestFailedException
+     * @throws InvalidConfigurationException
+     */
     public function purchase(): string
     {
         $purchaseData = $this->getPurchaseData();
@@ -39,6 +44,11 @@ class Paystar extends Driver
         return $this->redirect($paymentUrl, ['token' => $token]);
     }
 
+    /**
+     * @throws PaymentFailedException
+     * @throws HttpRequestFailedException
+     * @throws InvalidConfigurationException
+     */
     public function verify(): Receipt
     {
         $success = (int) request('status');
@@ -64,6 +74,11 @@ class Paystar extends Driver
         );
     }
 
+    /**
+     * @throws InvalidConfigurationException
+     * @throws \Exception
+     * @throws \Exception
+     */
     protected function getPurchaseData(): array
     {
         if (empty($this->settings['gateway_id'])) {
@@ -107,6 +122,9 @@ class Paystar extends Driver
         ];
     }
 
+    /**
+     * @throws InvalidConfigurationException
+     */
     protected function getVerificationData(): array
     {
         $cartNumber = request('card_number');
@@ -183,6 +201,9 @@ class Paystar extends Driver
         ];
     }
 
+    /**
+     * @throws HttpRequestFailedException
+     */
     private function callApi(string $url, array $data)
     {
         $headers = $this->getRequestHeaders();
