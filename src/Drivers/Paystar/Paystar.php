@@ -14,6 +14,11 @@ use Omalizadeh\MultiPayment\RedirectionForm;
 
 class Paystar extends Driver
 {
+    /**
+     * @throws PurchaseFailedException
+     * @throws HttpRequestFailedException
+     * @throws InvalidConfigurationException
+     */
     public function purchase(): string
     {
         $purchaseData = $this->getPurchaseData();
@@ -39,6 +44,11 @@ class Paystar extends Driver
         return $this->redirect($paymentUrl, ['token' => $token]);
     }
 
+    /**
+     * @throws PaymentFailedException
+     * @throws HttpRequestFailedException
+     * @throws InvalidConfigurationException
+     */
     public function verify(): Receipt
     {
         $success = (int) request('status');
@@ -64,15 +74,17 @@ class Paystar extends Driver
         );
     }
 
+    /**
+     * @throws InvalidConfigurationException
+     * @throws \Exception
+     * @throws \Exception
+     */
     protected function getPurchaseData(): array
     {
         if (empty($this->settings['gateway_id'])) {
             throw new InvalidConfigurationException('gateway_id key has not been set.');
         }
 
-        if (empty($this->settings['use_sign'])) {
-            throw new InvalidConfigurationException('use_sign key has not been set.');
-        }
 
         if (empty($this->settings['type'])) {
             throw new InvalidConfigurationException('type key has not been set.');
@@ -96,17 +108,31 @@ class Paystar extends Driver
         }
 
         $callback = $this->getInvoice()->getCallbackUrl() ?: $this->settings['callback'];
-        return [
-            'amount' => $this->getInvoice()->getAmount(),
-            'callback' => $callback,
-            'mobile' => $mobile,
-            'email' => $email ?? '',
-            'order_id' => $this->getInvoice()->getInvoiceId(),
-            'description' => $description,
-            'sign' => $sign ?? ''
-        ];
+        if ($this->settings['use_sign']) {
+            return [
+                'amount' => $this->getInvoice()->getAmount(),
+                'callback' => $callback,
+                'mobile' => $mobile,
+                'email' => $email ?? '',
+                'order_id' => $this->getInvoice()->getInvoiceId(),
+                'description' => $description,
+                'sign' => $sign ?? ''
+            ];
+        } else {
+            return [
+                'amount' => $this->getInvoice()->getAmount(),
+                'callback' => $callback,
+                'mobile' => $mobile,
+                'email' => $email ?? '',
+                'order_id' => $this->getInvoice()->getInvoiceId(),
+                'description' => $description
+            ];
+        }
     }
 
+    /**
+     * @throws InvalidConfigurationException
+     */
     protected function getVerificationData(): array
     {
         $cartNumber = request('card_number');
@@ -119,11 +145,20 @@ class Paystar extends Driver
             $sign = hash_hmac('sha512', $this->getInvoice()->getAmount() . '#' . $this->getInvoice()->getTransactionId() . '#' . $cartNumber . '#' . $trackingCode, $this->settings['secret_key']);
         }
 
-        return [
-            'ref_num' => $this->getInvoice()->getTransactionId(),
-            'amount' => $this->getInvoice()->getAmount(),
-            'sign' => $sign ?? ''
-        ];
+        if ($this->settings['use_sign']) {
+            return [
+                'ref_num' => $this->getInvoice()->getTransactionId(),
+                'amount' => $this->getInvoice()->getAmount(),
+                'sign' => $sign ?? ''
+            ];
+        } else {
+            return [
+                'ref_num' => $this->getInvoice()->getTransactionId(),
+                'amount' => $this->getInvoice()->getAmount(),
+            ];
+        }
+
+
     }
 
     protected function getStatusMessage(int|string $statusCode): string
@@ -183,6 +218,9 @@ class Paystar extends Driver
         ];
     }
 
+    /**
+     * @throws HttpRequestFailedException
+     */
     private function callApi(string $url, array $data)
     {
         $headers = $this->getRequestHeaders();

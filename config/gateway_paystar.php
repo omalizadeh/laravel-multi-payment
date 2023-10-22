@@ -8,19 +8,15 @@ return [
     'driver' => Omalizadeh\MultiPayment\Drivers\Paystar\Paystar::class,
 
     /**
-     *  gateway configurations.
-     * gateway_id is required
-     * type is required => direct | pardakht
-     * use_sign is optional => true | false
-     * secret_key is optional => If use sign is true fill this value, It's your gateway secret key for generate sign
+     * gateway configurations.
      */
     'main' => [
         'gateway_id' => '',
-        'secret_key' => '',
-        'type' => '',
+        'secret_key' => '', // If you use sign is true fill this value, It's your gateway secret key for generate sign
+        'type' => '', // Type is required => direct | pardakht
         'use_sign' => false,
         'callback' => 'https://yoursite.com/path/to',
-        'description' => 'payment using paystar',
+        'description' => 'payment using Paystar',
     ],
     'other' => [
         'gateway_id' => '',
@@ -28,6 +24,6 @@ return [
         'type' => '',
         'use_sign' => false,
         'callback' => 'https://yoursite.com/path/to',
-        'description' => 'payment using paystar',
+        'description' => 'payment using Paystar',
     ],
 ];
