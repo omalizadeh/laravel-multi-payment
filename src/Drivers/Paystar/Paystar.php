@@ -118,16 +118,16 @@ class Paystar extends Driver
                 'description' => $description,
                 'sign' => $sign ?? ''
             ];
-        } else {
-            return [
-                'amount' => $this->getInvoice()->getAmount(),
-                'callback' => $callback,
-                'mobile' => $mobile,
-                'email' => $email ?? '',
-                'order_id' => $this->getInvoice()->getInvoiceId(),
-                'description' => $description
-            ];
         }
+
+        return [
+            'amount' => $this->getInvoice()->getAmount(),
+            'callback' => $callback,
+            'mobile' => $mobile,
+            'email' => $email ?? '',
+            'order_id' => $this->getInvoice()->getInvoiceId(),
+            'description' => $description
+        ];
     }
 
     /**
@@ -151,12 +151,12 @@ class Paystar extends Driver
                 'amount' => $this->getInvoice()->getAmount(),
                 'sign' => $sign ?? ''
             ];
-        } else {
-            return [
-                'ref_num' => $this->getInvoice()->getTransactionId(),
-                'amount' => $this->getInvoice()->getAmount(),
-            ];
         }
+
+        return [
+            'ref_num' => $this->getInvoice()->getTransactionId(),
+            'amount' => $this->getInvoice()->getAmount(),
+        ];
 
 
     }
