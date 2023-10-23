@@ -34,6 +34,7 @@
 - [آیدی پی](https://idpay.ir)
 - [زیبال](https://zibal.ir)
 - [شبکه پرداخت پی](https://pay.ir)
+- [پی استار](https://paystar.ir)
 
 ## نصب
 
