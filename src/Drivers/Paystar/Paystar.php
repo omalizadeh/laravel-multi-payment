@@ -26,6 +26,7 @@ class Paystar extends Driver
 
         if ($response['status'] !== $this->getSuccessResponseStatusCode()) {
             $message = $response['message'] ?? $this->getStatusMessage($response['status']);
+
             throw new PurchaseFailedException($message, $response['status'], $purchaseData);
         }
 
@@ -61,6 +62,7 @@ class Paystar extends Driver
 
         if ($response['status'] !== $this->getSuccessResponseStatusCode()) {
             $message = $response['message'] ?? $this->getStatusMessage($response['status']);
+
             throw new PaymentFailedException($message, $response['status']);
         }
 
@@ -70,7 +72,7 @@ class Paystar extends Driver
             $this->getInvoice(),
             $response['data']['ref_num'],
             null,
-            $response['data']['card_number']
+            $response['data']['card_number'],
         );
     }
 
@@ -84,7 +86,6 @@ class Paystar extends Driver
         if (empty($this->settings['gateway_id'])) {
             throw new InvalidConfigurationException('gateway_id key has not been set.');
         }
-
 
         if (empty($this->settings['type'])) {
             throw new InvalidConfigurationException('type key has not been set.');
@@ -100,10 +101,10 @@ class Paystar extends Driver
                 throw new InvalidConfigurationException('secret_key key has not been set.');
             }
 
-            $sign = hash_hmac('sha512', $this->getInvoice()->getAmount() . '#' . $this->getInvoice()->getInvoiceId() . '#' . $this->settings['callback'], $this->settings['secret_key']);
+            $sign = hash_hmac('sha512', $this->getInvoice()->getAmount().'#'.$this->getInvoice()->getInvoiceId().'#'.$this->settings['callback'], $this->settings['secret_key']);
         }
 
-        if (!empty($mobile)) {
+        if (! empty($mobile)) {
             $mobile = $this->checkPhoneNumberFormat($mobile);
         }
 
@@ -116,18 +117,19 @@ class Paystar extends Driver
                 'email' => $email ?? '',
                 'order_id' => $this->getInvoice()->getInvoiceId(),
                 'description' => $description,
-                'sign' => $sign ?? ''
-            ];
-        } else {
-            return [
-                'amount' => $this->getInvoice()->getAmount(),
-                'callback' => $callback,
-                'mobile' => $mobile,
-                'email' => $email ?? '',
-                'order_id' => $this->getInvoice()->getInvoiceId(),
-                'description' => $description
+                'sign' => $sign ?? '',
             ];
         }
+
+        return [
+            'amount' => $this->getInvoice()->getAmount(),
+            'callback' => $callback,
+            'mobile' => $mobile,
+            'email' => $email ?? '',
+            'order_id' => $this->getInvoice()->getInvoiceId(),
+            'description' => $description,
+        ];
+
     }
 
     /**
@@ -142,22 +144,21 @@ class Paystar extends Driver
                 throw new InvalidConfigurationException('secret_key key has not been set.');
             }
 
-            $sign = hash_hmac('sha512', $this->getInvoice()->getAmount() . '#' . $this->getInvoice()->getTransactionId() . '#' . $cartNumber . '#' . $trackingCode, $this->settings['secret_key']);
+            $sign = hash_hmac('sha512', $this->getInvoice()->getAmount().'#'.$this->getInvoice()->getTransactionId().'#'.$cartNumber.'#'.$trackingCode, $this->settings['secret_key']);
         }
 
         if ($this->settings['use_sign']) {
             return [
                 'ref_num' => $this->getInvoice()->getTransactionId(),
                 'amount' => $this->getInvoice()->getAmount(),
-                'sign' => $sign ?? ''
-            ];
-        } else {
-            return [
-                'ref_num' => $this->getInvoice()->getTransactionId(),
-                'amount' => $this->getInvoice()->getAmount(),
+                'sign' => $sign ?? '',
             ];
         }
 
+        return [
+            'ref_num' => $this->getInvoice()->getTransactionId(),
+            'amount' => $this->getInvoice()->getAmount(),
+        ];
 
     }
 
@@ -197,17 +198,17 @@ class Paystar extends Driver
 
     protected function getPurchaseUrl(): string
     {
-        return 'https://core.paystar.ir/api/' . $this->settings['type'] . '/create';
+        return 'https://core.paystar.ir/api/'.$this->settings['type'].'/create';
     }
 
     protected function getPaymentUrl(): string
     {
-        return 'https://core.paystar.ir/api/' . $this->settings['type'] . '/payment';
+        return 'https://core.paystar.ir/api/'.$this->settings['type'].'/payment';
     }
 
     protected function getVerificationUrl(): string
     {
-        return 'https://core.paystar.ir/api/' . $this->settings['type'] . '/verify';
+        return 'https://core.paystar.ir/api/'.$this->settings['type'].'/verify';
     }
 
     private function getRequestHeaders(): array
@@ -229,6 +230,7 @@ class Paystar extends Driver
         if ($response->successful()) {
             return $response->json();
         }
+
         throw new HttpRequestFailedException($response->body(), $response->status());
     }
 
@@ -239,7 +241,7 @@ class Paystar extends Driver
         }
 
         if (strlen($phoneNumber) === 10 && Str::startsWith($phoneNumber, '9')) {
-            return '0' . $phoneNumber;
+            return '0'.$phoneNumber;
         }
 
         return $phoneNumber;
