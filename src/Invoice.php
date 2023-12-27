@@ -314,10 +314,10 @@ class Invoice
     public function setProducts(array $product): Invoice
     {
         $validator = Validator::make($product, [
-            'id'=>'required',
-            'name'=>'required',
-            'price'=>'required',
-            'qty'=>'required',
+            '*.id'=>'required',
+            '*.name'=>'required',
+            '*.price'=>'required',
+            '*.qty'=>'required',
         ]);
 
         if ($validator->fails())
