@@ -127,7 +127,6 @@ class Paystar extends Driver
             'mobile' => $mobile,
             'email' => $email ?? '',
             'order_id' => $this->getInvoice()->getInvoiceId(),
-
             'description' => $description,
         ];
 
@@ -160,7 +159,6 @@ class Paystar extends Driver
             'ref_num' => $this->getInvoice()->getTransactionId(),
             'amount' => $this->getInvoice()->getAmount(),
         ];
-
 
     }
 
