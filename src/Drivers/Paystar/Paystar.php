@@ -198,17 +198,17 @@ class Paystar extends Driver
 
     protected function getPurchaseUrl(): string
     {
-        return 'https://core.paystar.ir/api/'.$this->settings['type'].'/create';
+        return 'https://api.paystar.shop/api/'.$this->settings['type'].'/create';
     }
 
     protected function getPaymentUrl(): string
     {
-        return 'https://core.paystar.ir/api/'.$this->settings['type'].'/payment';
+        return 'https://api.paystar.shop/api/'.$this->settings['type'].'/payment';
     }
 
     protected function getVerificationUrl(): string
     {
-        return 'https://core.paystar.ir/api/'.$this->settings['type'].'/verify';
+        return 'https://api.paystar.shop/api/'.$this->settings['type'].'/verify';
     }
 
     private function getRequestHeaders(): array
